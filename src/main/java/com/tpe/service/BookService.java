@@ -33,10 +33,9 @@ public class BookService {
     public Book getBookById(Long identity) {
 
         //kontrol etmemiz gereken bir durum var mi?
-        Book book = bookRepository.findById(identity).
+        return bookRepository.findById(identity).
                 orElseThrow(()->new BookNotFoundException("Kitap bulunamadi, ID : "+identity));
 
-        return book;
     }
 
 
