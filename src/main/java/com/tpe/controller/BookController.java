@@ -5,6 +5,10 @@ import com.tpe.dto.BookDTO;
 import com.tpe.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -95,10 +99,46 @@ public class BookController {
 
         service.updateBookById(id,bookDTO);
 
-        return ResponseEntity.ok(""+id);
+        return ResponseEntity.ok("Kitap basariyla guncellendi. ID : "+id);
 
     }
 
 
+    //7- Get Books With Page
+    // http://localhost:8080/books/s?page=1&size=2&sort=publicationDate&direction=ASC + GET
+    @GetMapping("/s")
+    public ResponseEntity<Page<Book>> getAllBooksWithPage(@RequestParam("page") int page,
+                                                          @RequestParam("size") int size,
+                                                          @RequestParam("sort") String sortBy,
+                                                          @RequestParam("direction") Sort.Direction direction){
+
+        Pageable pageable= PageRequest.of(page-1,size,Sort.by(direction, sortBy));
+
+        Page<Book> booksWithPage = service.getAllBooksWithPage(pageable);
+
+        return ResponseEntity.ok(booksWithPage); // 200
+
+    }
+
+
+    //9- Get a Book By Its Author Using JPQL
+    // http://localhost:8080/books/a?author=AB
+    @GetMapping("/a")
+    public ResponseEntity<List<Book>> getBooksByauthor(@RequestParam("author") String author){
+
+        List<Book> books=service.getBooksByAuthor(author);
+
+        return ResponseEntity.ok(books);
+
+    }
+
+    // ODEV--> Get Books By Its Author and PublicationDate
+    //-->  http://localhost:8080/books/filter?author=Martin Eden&pubDate=1900
+    //     findByAuthorAndPublicationDate(author, pubDate);
+
+    //@Query(NativeQuery=true)
+
+    //ODEV  -->  Get Books By Its Title Which Contains a Pattern
+    //  -->  http://localhost:8080/books/filterbook?word=Eden
 
 }
