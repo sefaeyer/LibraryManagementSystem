@@ -1,8 +1,10 @@
 package com.tpe.service;
 
 import com.tpe.domain.Book;
+import com.tpe.domain.Owner;
 import com.tpe.dto.BookDTO;
 import com.tpe.exceptions.BookNotFoundException;
+import com.tpe.exceptions.ConflictException;
 import com.tpe.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,8 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private OwnerService ownerService;
 
     //1-b
     public void saveBook(Book book) {
@@ -94,8 +98,34 @@ public class BookService {
         if(bookList.isEmpty()){
             throw new BookNotFoundException("Yazara ait kitap bulunamadi.");
         }
-
         return bookList;
+    }
+
+
+    //10-b
+    public void addBookToOwner(Long bookID, Long ownerID) {
+
+        Book foundBook=getBookById(bookID);
+
+        Owner foundOwner = ownerService.getOwnerById(ownerID);
+
+        //belirtilen id ye sahip kitap daha once ownera verilmis mi
+        //foundOwner.getBookList().contains(foundBook);
+        boolean isBookExists = foundOwner.getBookList().stream().
+                anyMatch(
+                        book->book.getId().equals(bookID)
+                ); // eslesme var mi
+
+        if(isBookExists){
+            throw new ConflictException("Bu kitap zaten uyenin listesinde var"+ownerID);
+        } else if (foundBook.getOwner() != null) {
+            throw new ConflictException("Bu kitap baska uyededir");
+        }else{
+            //kitabi ownera verebiliriz
+            foundBook.setOwner(foundOwner);
+            //foundOwner.getBookList().add(foundBook); //  ---->  mappedBy ile yapildi zaten. bu koda gerek yok
+            bookRepository.save(foundBook); // kitabi repo da save etti
+        }
 
     }
 }

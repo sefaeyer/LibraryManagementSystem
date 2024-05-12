@@ -141,4 +141,20 @@ public class BookController {
     //ODEV  -->  Get Books By Its Title Which Contains a Pattern
     //  -->  http://localhost:8080/books/filterbook?word=Eden
 
+
+
+    //10 Add a book to anOwner
+    //http://localhost:8080/books/add?book=3&owner=1 + PATCH
+    @PatchMapping("/add")
+    public ResponseEntity<String> addBookToOwner(@RequestParam("book") Long bookID,
+                                                 @RequestParam("owner") Long ownerID){
+
+        service.addBookToOwner(bookID,ownerID);
+
+
+        return ResponseEntity.ok("Kitap  uyeye eklendi"); //
+    }
+
+
+
 }
