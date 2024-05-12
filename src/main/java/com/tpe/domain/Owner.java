@@ -1,5 +1,6 @@
 package com.tpe.domain;
 
+import com.tpe.dto.OwnerDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 //@AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 public class Owner {
 
     @Id
@@ -43,5 +44,11 @@ public class Owner {
     private List<Book> bookList = new ArrayList<>();
 
 
+    public Owner(OwnerDTO ownerDTO){
+        this.name=ownerDTO.getName();
+        this.lastName=ownerDTO.getLastName();
+        this.phoneNumber=ownerDTO.getPhoneNumber();
+        this.email=ownerDTO.getEmail();
+    }
 
 }
